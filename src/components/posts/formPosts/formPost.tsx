@@ -1,9 +1,10 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
+import { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthContext';
 import Postagem from '../../../models/Post';
 import Tema from '../../../models/Theme';
 import { buscar, atualizar, cadastrar } from '../../../services/Service';
+import { toastAlerta } from '../../../utils/toastAlert';
 
 
 function FormularioPostagem() {
@@ -56,7 +57,7 @@ function FormularioPostagem() {
 
   useEffect(() => {
     if (token === '') {
-      alert('Você precisa estar logado');
+      toastAlerta('Você precisa estar logado', 'info');
       navigate('/');
     }
   }, [token]);
@@ -76,6 +77,7 @@ function FormularioPostagem() {
       theme: tema,
     });
   }, [tema]);
+
 
   function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
     setPostagem({
@@ -102,14 +104,14 @@ function FormularioPostagem() {
             Authorization: token,
           },
         });
-        alert('Postagem atualizada com sucesso');
+        toastAlerta('Postagem atualizada com sucesso', 'sucesso');
         retornar();
       } catch (error: any) {
         if (error.toString().includes('403')) {
-          alert('O token expirou, favor logar novamente')
+          toastAlerta('O token expirou, favor logar novamente', 'info')
           handleLogout()
         } else {
-          alert('Erro ao atualizar a Postagem');
+          toastAlerta('Erro ao atualizar a Postagem', 'erro');
         }
       }
     } else {
@@ -120,14 +122,14 @@ function FormularioPostagem() {
           },
         });
 
-        alert('Postagem cadastrada com sucesso');
+        toastAlerta('Postagem cadastrada com sucesso', 'sucesso');
         retornar();
       } catch (error: any) {
         if (error.toString().includes('403')) {
-          alert('O token expirou, favor logar novamente')
+          toastAlerta('O token expirou, favor logar novamente', 'info')
           handleLogout()
         } else {
-          alert('Erro ao cadastrar a Postagem');
+          toastAlerta('Erro ao cadastrar a Postagem', 'erro');
         }
       }
     }
@@ -166,7 +168,7 @@ function FormularioPostagem() {
         </div>
         <div className="flex flex-col gap-2">
           <p>Tema da postagem</p>
-          <select name="theme" id="tema" className='border p-2 border-slate-800 rounded' onChange={(e) => buscarTemaPorId(e.currentTarget.value)}>
+          <select name="tema" id="tema" className='border p-2 border-slate-800 rounded' onChange={(e) => buscarTemaPorId(e.currentTarget.value)}>
             <option value="" selected disabled>Selecione um tema</option>
             {temas.map((tema) => (
               <>
